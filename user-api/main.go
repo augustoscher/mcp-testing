@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/google/uuid"
@@ -65,10 +66,42 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-// ListUsers handles GET /users endpoint
+// ListUsers handles GET /users endpoint (with optional name filter)
 func ListUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
+	// Check if name parameter is provided for filtering
+	userName := r.URL.Query().Get("name")
+	
+	if userName != "" {
+		// Filter by name (case-insensitive)
+		var usersFound []User
+		for _, user := range users {
+			if strings.EqualFold(user.Name, userName) {
+				usersFound = append(usersFound, user)
+			}
+		}
+
+		if len(usersFound) == 0 {
+			response := Response{
+				Success: false,
+				Message: "User not found",
+			}
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(response)
+			return
+		}
+
+		response := Response{
+			Success: true,
+			Message: "User found",
+			Data:    usersFound,
+		}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	// No name filter, return all users
 	response := Response{
 		Success: true,
 		Message: fmt.Sprintf("Found %d users", len(users)),
@@ -107,6 +140,8 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+
+
 // HealthCheck endpoint for basic health monitoring
 func HealthCheck(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -134,6 +169,7 @@ func main() {
 	fmt.Println("  POST   /users     - Add a new user")
 	fmt.Println("  GET    /users     - List all users")
 	fmt.Println("  GET    /users/{id} - Get user by ID")
+	fmt.Println("  GET    /users?name=value - Get user by name")
 	fmt.Println("  GET    /health    - Health check")
 	fmt.Println()
 

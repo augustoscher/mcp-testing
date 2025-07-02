@@ -27,6 +27,11 @@ curl http://localhost:8080/users
 curl http://localhost:8080/users/3574af65-5c65-41d6-bc5f-6b8c1c228171
 ```
 
+# List Users by Name
+```bash
+curl "http://localhost:8080/users?name=john%20doe" | jq
+```
+
 # Health Check
 ```bash
 curl http://localhost:8080/health
