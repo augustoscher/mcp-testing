@@ -1,0 +1,17 @@
+{
+  "name": "mcp-server",
+  "version": "1.0.0",
+  "description": "mcp-server",
+  "main": "index.ts",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/index.ts",
+    "build": "tsc && chmod +x dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.13.3"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
